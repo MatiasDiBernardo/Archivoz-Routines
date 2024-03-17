@@ -4,6 +4,8 @@ from datetime import date
 import os
 import zipfile
 
+from upload_drive import upload_file
+
 def process_data(row_users, row_recs):
     """
     Create dictionary with the most important data from the
@@ -46,9 +48,6 @@ def process_data(row_users, row_recs):
         data["Minutos Donados"].append(minutos_audio)
 
     return data
-
-# Guardar users registrados
-# Info Usuarios registrados: [ID, Nombre, Mail, Región, minutos audio donado, custom TTS on/off, custom TTS uses]
 
 def get_data_from_db():
     """
@@ -147,13 +146,18 @@ df_new.to_excel(excel_file_path, index=False)
 excel_stats_path = 'Archivoz stats.xlsx'
 df_stats_old = pd.read_excel(excel_stats_path)
 df_stats = pd.concat([df_stats_old, pd.DataFrame(data_of_the_week)], ignore_index=True)
-#df_stats.to_excel(excel_stats_path, index=False)
+df_stats.to_excel(excel_stats_path, index=False)
 
 # Make db zip with the current date
-zip_filename = f"Backup DB {date.today()}.zip"
+bck_name = f"Backup DB {date.today()}.zip"
+zip_filename = os.path.join("db_backups", bck_name)
 
 with zipfile.ZipFile(zip_filename, 'w') as zip_file:
     zip_file.write(os.path.join("instance", "data_base.db"))
 
 # Upload files to drive
+upload_file(excel_file_path, excel_file_path, os.environ.get('FOLDER_STATS'))
+upload_file(excel_stats_path, excel_stats_path, os.environ.get('FOLDER_STATS'))
+
+upload_file(zip_filename, zip_filename, os.environ.get('FOLDER_BACKUP'))
 

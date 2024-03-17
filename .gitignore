@@ -1,5 +1,8 @@
 /instance
 /uploads
 /venv
+/db_backups
 /Archivoz data general.xlsx
 /Archivoz stats.xlsx
+/archivoz-backup-de3a274eace7.json
+/.env
